@@ -25,7 +25,6 @@ public class ExampleTest {
         return users;
     }
 
-
     @BeforeEach
     public List<Expense> takeExpenseList() {
         List<Expense> expenses = new ArrayList<>();
@@ -38,8 +37,6 @@ public class ExampleTest {
 
         return expenses;
     }
-
-
 
     @Test
     public void shouldReturnUsersWithEndsA() {
