@@ -1,10 +1,8 @@
 package pl.javastart.streamstask;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class StreamsTask {
 
@@ -34,26 +32,51 @@ public class StreamsTask {
         Double averageMenAge = averageMenAge(users);
         Map<Long, List<Expense>> expensesByUserId = groupExpensesByUserId(users, expenses);
         Map<User, List<Expense>> expensesByUser = groupExpensesByUser(users, expenses);
+
+    }
+
+    private Map<Boolean, List<User>> getGenderUsersGroup(Collection<User> users) {
+        return users.stream()
+                .collect(Collectors.partitioningBy(user -> user.getName().endsWith("a")));
     }
 
     // metoda powinna zwracać listę kobiet (sprawdzając, czy imię kończy się na "a")
     Collection<User> findWomen(Collection<User> users) {
-        throw new RuntimeException("Not implemented");
+
+        return getGenderUsersGroup(users).get(true);
+//         return users.stream()
+//                .filter(user -> user.getName().endsWith("a"))
+//                .collect(Collectors.toList());
     }
 
     // metoda powinna zwracać średni wiek mężczyzn (sprawdzając, czy imię nie kończy się na "a")
     Double averageMenAge(Collection<User> users) {
-        throw new RuntimeException("Not implemented");
+
+        return getGenderUsersGroup(users).get(false).stream()
+                .mapToInt(User::getAge)
+                .average()
+                .getAsDouble();
+
+//        return users.stream()
+//                .filter(user -> !user.getName().endsWith("a"))
+//                .mapToInt(User::getAge)
+//                .average()
+//                .getAsDouble();
     }
 
     // metoda powinna zwracać wydatki zgrupowane po ID użytkownika
     Map<Long, List<Expense>> groupExpensesByUserId(Collection<User> users, List<Expense> expenses) {
-        throw new RuntimeException("Not implemented");
+        return users.stream()
+                .collect(Collectors.groupingBy(User::getId,
+                        Collectors.flatMapping(user -> expenses.stream().filter(expense -> expense.getUserId() == user.getId()), Collectors.toList())));
     }
 
     // metoda powinna zwracać wydatki zgrupowane po użytkowniku
     // podobne do poprzedniego, ale trochę trudniejsze
     Map<User, List<Expense>> groupExpensesByUser(Collection<User> users, List<Expense> expenses) {
-        throw new RuntimeException("Not implemented");
+
+        return users.stream()
+                .collect(Collectors.groupingBy(user -> user,
+                        Collectors.flatMapping(user -> expenses.stream().filter(expense -> expense.getUserId() == user.getId()), Collectors.toList())));
     }
 }
